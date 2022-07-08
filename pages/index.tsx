@@ -1,9 +1,11 @@
+import { useSession, signIn, signOut } from "next-auth/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const { data: session } = useSession();
   return (
     <div className={styles.container}>
       <Head>
@@ -16,11 +18,18 @@ const Home: NextPage = () => {
         <div className={styles.grid}>
           <span>
             <h4 className="my-4">Signin to suggest a video topic </h4>
-            <Link href="/api/auth/signin">
-              <a className="bg-blue-600 text-white py-2 px-4 rounded-md">
-                Signin
-              </a>
-            </Link>
+            {session ? (
+              <>
+                Signed in as {session?.user?.email} <br />
+                <button onClick={() => signOut()}>Sign out</button>
+              </>
+            ) : (
+              <Link href="/api/auth/signin">
+                <a className="bg-blue-600 text-white py-2 px-4 rounded-md">
+                  Signin
+                </a>
+              </Link>
+            )}
           </span>
         </div>
       </main>
