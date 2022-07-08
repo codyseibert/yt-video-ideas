@@ -13,14 +13,14 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Web Dev Junkie</a>
-        </h1>
-
         <div className={styles.grid}>
           <span>
-            <h4>Signin to suggest a video topic </h4>
-            <Link href="/">Signin</Link>
+            <h4 className="my-4">Signin to suggest a video topic </h4>
+            <Link href="/api/auth/signin">
+              <a className="bg-blue-600 text-white py-2 px-4 rounded-md">
+                Signin
+              </a>
+            </Link>
           </span>
         </div>
       </main>
