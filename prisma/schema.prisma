@@ -14,10 +14,13 @@ model User{
   id Int @id @default(autoincrement())
   email String
   password String
+  todos Todo[]
 }
 
 model Todo{
   id Int @id @default(autoincrement())
   title String
-  createdAt DateTime? @default(now())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  createdAt DateTime @default(now())
 }
