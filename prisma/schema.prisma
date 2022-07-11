@@ -19,19 +19,10 @@ datasource db {
 // --
 
 
-model User {
-  id           String @id @default(uuid())
-  email        String @unique
-  name         String
-  ideas        Idea[] @relation("ideas")
-  upvotedIdeas Idea[] 
-}
+
 
 model Idea {
   id          String  @id @default(uuid())
   title       String
   description String
-  User        User?   @relation("ideas", fields: [userId], references: [id])
-  userId      String?
-  upvotedBy   User[]  
 }

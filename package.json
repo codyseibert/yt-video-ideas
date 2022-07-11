@@ -10,13 +10,15 @@
     "db:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
-    "@prisma/client": "4.0.0",
+    "@prisma/client": "^4.0.0",
     "@types/next-auth": "^3.15.0",
+    "axios": "^0.27.2",
     "next": "12.2.1",
     "next-auth": "^4.9.0",
     "prisma": "^4.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.33.1",
     "ts-node": "^10.8.2"
   },
   "devDependencies": {
