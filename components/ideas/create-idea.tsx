@@ -10,10 +10,11 @@ type Inputs = {
   description: string;
 };
 
-const CreateIdea = (props: Props) => {
+const CreateIdeaForm = (props: Props) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -21,7 +22,7 @@ const CreateIdea = (props: Props) => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const res = await axios.post("/api/ideas/create-idea", { data });
-    console.log(res);
+    reset();
   };
 
   return (
@@ -78,4 +79,4 @@ const CreateIdea = (props: Props) => {
   );
 };
 
-export default CreateIdea;
+export default CreateIdeaForm;
