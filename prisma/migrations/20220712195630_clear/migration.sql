@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `Idea` ALTER COLUMN `userImage` DROP DEFAULT,
+    ALTER COLUMN `userName` DROP DEFAULT,
+    ALTER COLUMN `userEmail` DROP DEFAULT;

@@ -10,7 +10,8 @@ import CreateIdeaForm from "../components/ideas/create-idea";
 
 const Home: NextPage = () => {
   const [visible, setVisible] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
   return (
     <div>
       <Head>
@@ -31,20 +32,50 @@ const Home: NextPage = () => {
                 />
               </div>
             </span>
-            <div className="flex items-center gap-x-2">
-              <span>
-                <h2 className="font-semibold text-xl">Benson Yeboah</h2>
-              </span>
-              <button
-                onClick={() => setVisible(true)}
-                className="bg-blue-300 text-white rounded-md py-2 px-4"
-              >
-                New idea
-              </button>
-              <button className="text-blue-300 rounded-md py-2 px-4 border border-blue-300 hover:bg-blue-300">
-                logout
-              </button>
-            </div>
+            {status === "authenticated" ? (
+              <div className="flex items-center gap-x-2">
+                <span>
+                  <h2 className="font-semibold text-xl">
+                    {session?.user?.name}
+                  </h2>
+                </span>
+                <button
+                  onClick={() => setVisible(true)}
+                  className="bg-blue-300 text-white rounded-md py-2 px-4"
+                >
+                  New idea
+                </button>
+                <button
+                  onClick={() => signOut()}
+                  className="text-blue-300 rounded-md py-2 px-4 border border-blue-300 hover:bg-blue-300"
+                >
+                  logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => signIn()}
+                  className="bg-blue-400 text-white rounded-md py-2 px-4 flex gap-x-2 items-center"
+                >
+                  <span>Signin</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                </button>
+              </>
+            )}
           </section>
         </header>
 
@@ -62,7 +93,7 @@ const Home: NextPage = () => {
             onCancel={() => setVisible(false)}
             footer={null}
           >
-            <CreateIdeaForm />
+            <CreateIdeaForm setVisible={() => setVisible(false)} />
           </Modal>
         </section>
       </main>

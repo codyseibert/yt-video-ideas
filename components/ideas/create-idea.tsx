@@ -1,16 +1,24 @@
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-// import { signOut, useSession } from "next-auth/react";
 
-type Props = {};
+type Props = {
+  setVisible: any;
+};
 
 type Inputs = {
   title: string;
   description: string;
+  userName?: String;
+  userImage?: String;
+  userEmail?: String;
 };
 
-const CreateIdeaForm = (props: Props) => {
+const CreateIdeaForm = ({ setVisible }: Props) => {
+  const [status, setStatus] = useState(false);
+  const { data: session } = useSession();
+
   const {
     register,
     handleSubmit,
@@ -18,16 +26,24 @@ const CreateIdeaForm = (props: Props) => {
     formState: { errors },
   } = useForm<Inputs>();
 
-  // const { status } = useSession({ required: true });
-
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const res = await axios.post("/api/ideas/create-idea", { data });
-    reset();
+    setStatus(true);
+    data.userName = session?.user?.name ?? "";
+    data.userImage = session?.user?.image ?? "";
+    data.userEmail = session?.user?.email ?? "";
+
+    axios
+      .post("/api/ideas/create-idea", { data })
+      .then(() => {
+        setVisible();
+        setStatus(false);
+        reset();
+      })
+      .catch(() => {});
   };
 
   return (
     <>
-      <div>{/* <button onClick={() => signOut()}>Sign Out</button> */}</div>
       <div className="w-full">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -70,7 +86,7 @@ const CreateIdeaForm = (props: Props) => {
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Submit
+              {status ? <span>Loading...</span> : <span>Create</span>}
             </button>
           </div>
         </form>

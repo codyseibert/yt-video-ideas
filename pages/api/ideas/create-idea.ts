@@ -9,6 +9,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       data: {
         title: data?.title,
         description: data?.description,
+        userName: data?.userName,
+        userImage: data?.userImage,
+        userEmail: data?.userEmail,
       },
     });
 

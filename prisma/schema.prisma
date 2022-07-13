@@ -25,4 +25,7 @@ model Idea {
   id          String  @id @default(uuid())
   title       String
   description String
+  userName String 
+  userImage String 
+  userEmail String 
 }
