@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Idea` ADD COLUMN `userEmail` VARCHAR(191) NOT NULL DEFAULT '';
