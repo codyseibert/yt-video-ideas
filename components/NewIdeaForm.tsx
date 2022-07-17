@@ -14,11 +14,13 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit = () => {};
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
@@ -27,7 +29,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
           type="text"
           placeholder="some great idea"
           className="border border-gray-300 p-2 w-full rounded-md"
-          {...register("title", { required: "Title is required" })}
+          {...register("title", { required: true })}
         />
         {errors.title && (
           <span className="text-red-300">This field is required</span>
@@ -39,7 +41,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
             placeholder="kindly describe your awesome idea which will probably take us to the moon 🚀🚀🚀"
             className="border border-gray-300 p-2 w-full rounded-md"
             rows={5}
-            {...register("description", { required: "Title is required" })}
+            {...register("description", { required: true })}
           ></textarea>
           {errors.description && (
             <span className="text-red-300">This field is required</span>
