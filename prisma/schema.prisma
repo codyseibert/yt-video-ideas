@@ -6,3 +6,11 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model idea{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  voteCount Int @default(0)
+  authorImage String?
+  authorName String?
+}
