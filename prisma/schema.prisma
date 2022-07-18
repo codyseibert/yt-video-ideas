@@ -13,4 +13,6 @@ model idea{
   voteCount Int @default(0)
   authorImage String?
   authorName String?
+  title String
+  description String
 }

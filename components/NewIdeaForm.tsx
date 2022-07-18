@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import axios from "axios";
+import { RotateSpinner } from "react-spinners-kit";
 
 type Props = {
   setShowModal: (args: boolean) => void;
@@ -11,14 +14,27 @@ type Inputs = {
 };
 
 const NewIdeaForm = ({ setShowModal }: Props) => {
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
+  const { data: session, status } = useSession();
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setLoadingStatus(true);
+    const response = await axios.post("/api/create-idea", {
+      title: data?.title,
+      description: data?.description,
+      authorImage: session?.user?.image,
+      authorName: session?.user?.name,
+    });
+    reset();
+    setLoadingStatus(false);
+    setShowModal(false);
   };
 
   return (
@@ -60,7 +76,11 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
             type="submit"
             className="bg-blue-400 hover:bg-blue-500 text-white rounded-md py-2 px-8"
           >
-            Submit
+            {loadingStatus ? (
+              <RotateSpinner size={30} color="white" />
+            ) : (
+              <span>Create</span>
+            )}
           </button>
         </div>
       </div>
