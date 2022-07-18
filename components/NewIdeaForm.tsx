@@ -60,7 +60,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
             type="submit"
             className="bg-blue-400 hover:bg-blue-500 text-white rounded-md py-2 px-8"
           >
-            submit
+            Submit
           </button>
         </div>
       </div>

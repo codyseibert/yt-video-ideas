@@ -26,7 +26,7 @@ const IdeaCard = (props: Props) => {
             className="rounded-full"
           />
 
-          <div className="flex items-center">
+          <div className="flex items-center text-white">
             <small>Benson Yeboah </small>
             <VotedHeart className="w-8 h-6 text-red-500" />
             <small>10</small>
