@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db": "docker run --name youtubevideos -p 3306:3306 -e MYSQL_DATABASE=youtubevideos -e MYSQL_ROOT_PASSWORD=Host@GH247 -d mysql:latest",
     "lint": "next lint"
   },
   "dependencies": {
