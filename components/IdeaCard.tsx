@@ -16,8 +16,6 @@ type Props = {
 };
 
 const IdeaCard = ({ idea }: Props) => {
-  console.log(idea.authorImage);
-
   return (
     <div>
       <div className="block p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
@@ -38,9 +36,11 @@ const IdeaCard = ({ idea }: Props) => {
           />
 
           <div className="flex items-center text-white">
-            <small className="text-black">Benson Yeboah </small>
+            <small className="text-black dark:text-white">Benson Yeboah </small>
             <VotedHeart className="w-8 h-6 text-red-500" />
-            <small className="text-black">{idea?.voteCount}</small>
+            <small className="text-black dark:text-white">
+              {idea?.voteCount}
+            </small>
           </div>
         </section>
       </div>

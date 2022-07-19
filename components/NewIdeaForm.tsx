@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { RotateSpinner } from "react-spinners-kit";
+import { ideaCategories } from "../data/ideaCategory";
 
 type Props = {
   setShowModal: (args: boolean) => void;
@@ -11,11 +12,12 @@ type Props = {
 type Inputs = {
   title: string;
   description: string;
+  category: "youtube_shorts" | "opinions_on" | "project_idea" | "tutorial";
 };
 
 const NewIdeaForm = ({ setShowModal }: Props) => {
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const {
     register,
@@ -26,11 +28,12 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoadingStatus(true);
-    const response = await axios.post("/api/create-idea", {
+    const response = await axios.post("/api/ideas/create-idea", {
       title: data?.title,
       description: data?.description,
       authorImage: session?.user?.image,
       authorName: session?.user?.name,
+      category: data?.category,
     });
     reset();
     setLoadingStatus(false);
@@ -51,7 +54,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
           <span className="text-red-300">This field is required</span>
         )}
 
-        <div className="my-4">
+        <div className="mt-4">
           <label htmlFor="description">Description:</label>
           <textarea
             placeholder="kindly describe your awesome idea which will probably take us to the moon 🚀🚀🚀"
@@ -64,17 +67,37 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
           )}
         </div>
 
+        <div className="mb-4  mt-2">
+          <label htmlFor="category">Category:</label>
+          <select
+            {...register("category", { required: true })}
+            className=" border border-gray-300 p-2 w-full rounded-md"
+          >
+            <option value="">Select Category</option>
+            {ideaCategories.map((option, index) => (
+              <option value={option?.value} key={index}>
+                {option?.label}
+              </option>
+            ))}
+          </select>
+          {errors.category && (
+            <span className="text-red-300">This field is required</span>
+          )}
+        </div>
+
         <div className="flex gap-4">
           <button
+            disabled={loadingStatus}
             onClick={() => setShowModal(false)}
-            className="bg-red-400 hover:bg-red-500 text-white rounded-md py-2 px-8"
+            className="bg-red-400 disabled:hover:cursor-not-allowed disabled:bg-gray-300 hover:bg-red-500 text-white rounded-md py-2 px-8"
           >
             Cancel
           </button>
 
           <button
+            disabled={loadingStatus}
             type="submit"
-            className="bg-blue-400 hover:bg-blue-500 text-white rounded-md py-2 px-8"
+            className="bg-blue-400 disabled:hover:cursor-not-allowed disabled:bg-gray-300 hover:bg-blue-500 text-white rounded-md py-2 px-8"
           >
             {loadingStatus ? (
               <RotateSpinner size={30} color="white" />

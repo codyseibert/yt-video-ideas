@@ -1,44 +1,31 @@
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "../components/Header";
-import IdeaCard from "../components/IdeaCard";
-import SearchBar from "../components/SearchBar";
+import NavBar from "../components/NavBar";
+import Opinions from "../components/NavBarPages/Opinions";
+import ProjectIdeas from "../components/NavBarPages/ProjectIdeas";
+import Tutorials from "../components/NavBarPages/Tutorials";
+import YoutubeShorts from "../components/NavBarPages/YoutubeShorts";
 
-type Idea = {
-  title: string;
-  description: string;
-  authorImage: string;
-  authorName: string;
-  voteCount: number;
-};
+type ICategory = string;
 
 const Home: NextPage = () => {
-  const [ideas, setIdeas] = useState<Idea[]>([]);
-  useEffect(() => {
-    fetch("/api/fetch-ideas")
-      .then((data) => data.json())
-      .then((data) => setIdeas(data))
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const [categoryType, setCategoryType] = useState<ICategory>("youtube_shorts");
 
   return (
     <div>
       <div>
         <Header />
-        <SearchBar />
-
+        <NavBar setCategoryType={setCategoryType} categoryType={categoryType} />
         <section className="mt-4">
           <div className="content">
             <h3 className="font-semibold text-4xl">Awesome Ideas 🤩🥳</h3>
 
             <section className="my-4 grid gap-4 grid-cols-4">
-              {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
-
-              {ideas?.map((idea, index) => (
-                <IdeaCard key={index} idea={idea} />
-              ))}
+              {categoryType === "youtube_shorts" && <YoutubeShorts />}
+              {categoryType === "opinions_on" && <Opinions />}
+              {categoryType === "project_idea" && <ProjectIdeas />}
+              {categoryType === "tutorial" && <Tutorials />}
             </section>
           </div>
         </section>

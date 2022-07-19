@@ -3,6 +3,7 @@ import { useSession, signOut, signIn } from "next-auth/react";
 import Image from "next/image";
 import logo from "../assets/logo.jpeg";
 import NewIdeaBtn from "./NewIdeaBtn";
+import Link from "next/link";
 
 type Props = {};
 
@@ -13,7 +14,11 @@ const Header = (props: Props) => {
     <header className="bg-gray-100">
       <div className="content">
         <div className="flex justify-between items-center">
-          <Image src={logo} alt="" width={60} height={60} />
+          <Link href="https://www.youtube.com/c/WebDevJunkie">
+            <a target="_blank" rel="noopener noreferrer">
+              <Image src={logo} alt="" width={60} height={60} />
+            </a>
+          </Link>
 
           <section className="flex items-center gap-x-2">
             {status === "authenticated" ? (
