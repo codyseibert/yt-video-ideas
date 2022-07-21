@@ -16,4 +16,13 @@ model idea{
   title String
   description String
   category String @default("")
+  likes likes[]
+}
+
+model likes {
+  id     String @id @default(uuid())
+  name   String
+  ideaId String?
+  email  String?
+  Idea   idea?   @relation(fields: [ideaId], references: [id])
 }

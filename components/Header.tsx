@@ -24,7 +24,7 @@ const Header = (props: Props) => {
             {status === "authenticated" ? (
               <>
                 <button className="font-semibold text-xl p-2">
-                  {session?.user?.email}
+                  {session?.user?.name}
                 </button>
                 <NewIdeaBtn />
                 <button

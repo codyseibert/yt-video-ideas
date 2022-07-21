@@ -1,9 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from "next/image";
-import React from "react";
+import { useSession, signIn } from "next-auth/react";
+import React, { useState } from "react";
 import { HeartIcon as VotedHeart } from "@heroicons/react/solid";
 import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import logo from "../assets/logo.jpeg";
+import axios from "axios";
+import { HeartSpinner } from "react-spinners-kit";
 
 type Props = {
   idea: {
@@ -12,10 +14,30 @@ type Props = {
     authorImage: string;
     authorName: string;
     voteCount: number;
+    id: string;
   };
 };
 
 const IdeaCard = ({ idea }: Props) => {
+  const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
+
+  const handleHeart = async () => {
+    if (status === "unauthenticated") {
+      return signIn();
+    }
+
+    setLoading(true);
+    const response = await axios.post("/api/ideas/heart-idea", {
+      authorEmail: session?.user?.email,
+      authorName: session?.user?.name,
+      ideaId: idea?.id,
+    });
+    setLoading(false);
+  };
+
+  const handleUnHeart = () => {};
+
   return (
     <div>
       <div className="block p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
@@ -37,7 +59,14 @@ const IdeaCard = ({ idea }: Props) => {
 
           <div className="flex items-center text-white">
             <small className="text-black dark:text-white">Benson Yeboah </small>
-            <VotedHeart className="w-8 h-6 text-red-500" />
+
+            {loading && <HeartSpinner size={20} color="red" />}
+
+            <VotedHeart
+              onClick={() => handleHeart()}
+              className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
+            />
+
             <small className="text-black dark:text-white">
               {idea?.voteCount}
             </small>
