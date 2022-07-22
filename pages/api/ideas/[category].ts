@@ -5,6 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+
   const category = req.query.category as string;
   const allIdeas = await prisma.idea.findMany({
     where: {

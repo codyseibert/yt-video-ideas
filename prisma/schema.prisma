@@ -7,22 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model idea{
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  voteCount Int @default(0)
+model Idea {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  voteCount   Int      @default(0)
   authorImage String?
-  authorName String?
-  title String
+  authorName  String?
+  title       String
   description String
-  category String @default("")
-  likes likes[]
+  category    String   @default("")
+  likes       Like[]
 }
 
-model likes {
-  id     String @id @default(uuid())
-  name   String
+model Like {
+  id     String  @id @default(uuid())
   ideaId String?
   email  String?
-  Idea   idea?   @relation(fields: [ideaId], references: [id])
+  idea   Idea?   @relation(fields: [ideaId], references: [id])
 }

@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export default NextAuth({
+
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId:
@@ -9,5 +10,6 @@ export default NextAuth({
       clientSecret: "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",
     }),
   ],
-  // secret: "ghghghghghuhuwrhfwubfbdjbfd",
-});
+}
+
+export default NextAuth(authOptions);

@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { useSession, signIn } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { HeartIcon as VotedHeart } from "@heroicons/react/solid";
 import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import logo from "../assets/logo.jpeg";
 import axios from "axios";
 import { HeartSpinner } from "react-spinners-kit";
+import { LikesContext } from "../pages";
+import { Idea } from "@prisma/client";
 
 type Props = {
   idea: {
@@ -16,27 +18,37 @@ type Props = {
     voteCount: number;
     id: string;
   };
+  setIdeas: React.Dispatch<React.SetStateAction<any[]>>
 };
 
-const IdeaCard = ({ idea }: Props) => {
+const IdeaCard = ({ idea, setIdeas }: Props) => {
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
+  const { isLiked, fetchLikes } = useContext(LikesContext)!;
 
-  const handleHeart = async () => {
+  const toggleHeart = async () => {
     if (status === "unauthenticated") {
       return signIn();
     }
 
     setLoading(true);
-    const response = await axios.post("/api/ideas/heart-idea", {
-      authorEmail: session?.user?.email,
-      authorName: session?.user?.name,
+    const { data: like } = await axios.post("/api/ideas/heart-idea", {
       ideaId: idea?.id,
     });
     setLoading(false);
-  };
+    // optimistic client-side updating
+    setIdeas((prevIdeas: any[]) =>
+      [
+        ...prevIdeas.filter((prevIdea: any) => prevIdea.id !== idea?.id),
+        {
+          ...idea,
+          voteCount: idea.voteCount + (isLiked(idea.id) ? -1 : 1),
+        }
+      ],
+    )
+    await fetchLikes();
 
-  const handleUnHeart = () => {};
+  };
 
   return (
     <div>
@@ -60,13 +72,16 @@ const IdeaCard = ({ idea }: Props) => {
           <div className="flex items-center text-white">
             <small className="text-black dark:text-white">Benson Yeboah </small>
 
-            {loading && <HeartSpinner size={20} color="red" />}
-
-            <VotedHeart
-              onClick={() => handleHeart()}
-              className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
-            />
-
+            {isLiked(idea.id) ?
+              <VotedHeart
+                onClick={() => toggleHeart()}
+                className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
+              />
+              : <NotVotedHeart
+                onClick={() => toggleHeart()}
+                className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
+              />
+            }
             <small className="text-black dark:text-white">
               {idea?.voteCount}
             </small>

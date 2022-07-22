@@ -26,7 +26,10 @@ const YoutubeShorts = (props: Props) => {
     <div>
       {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
       {ideas?.map((idea, index) => (
-        <IdeaCard key={index} idea={idea} />
+        <IdeaCard
+          key={index}
+          idea={idea}
+          setIdeas={setIdeas} />
       ))}
     </div>
   );
