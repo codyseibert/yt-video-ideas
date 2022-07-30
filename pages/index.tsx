@@ -1,6 +1,6 @@
 import { Idea, Like } from "@prisma/client";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getIdeas } from "../api/getIdeas";
 import { getLikes } from "../api/getLikes";
 import Header from "../components/Header";
@@ -9,10 +9,29 @@ import CategoryTabs from "../components/CategoryTabs";
 import { Category } from "../data/ideaCategory";
 import { CreateIdeaModal } from "../components/CreateIdeaModal";
 import { useQuery } from "@tanstack/react-query";
+import SearchBar from "../components/SearchBar";
+
+const filterIdeasBySearchBar = (ideasToFilter: Idea[], search: string) => {
+  if (!search) return ideasToFilter;
+  return ideasToFilter.filter(idea =>
+    idea.title.toLowerCase().includes(search.toLowerCase()) ||
+    idea.description.toLowerCase().includes(search.toLowerCase())
+  )
+}
+
+const getSortedIdeas = (ideasToSort: Idea[]) => {
+  if (!ideasToSort) return [];
+  const sortedIdeas = [...ideasToSort]
+  sortedIdeas.sort((a, b) => {
+    return b.voteCount - a.voteCount
+  });
+  return sortedIdeas;
+}
 
 const Home: NextPage = () => {
   const [categoryType, setCategoryType] = useState<Category>(Category.SHORTS);
   const [showModal, setShowModal] = useState(false);
+  const [search, setSearch] = useState('');
 
   const { data: likes, refetch: refetchLikes } =
     useQuery<Like[]>(['likes'], getLikes)
@@ -29,14 +48,9 @@ const Home: NextPage = () => {
     refetchIdeas();
   }
 
-  const getSortedIdeas = () => {
-    if (!ideas) return [];
-    const sortedIdeas = [...ideas]
-    sortedIdeas.sort((a, b) => {
-      return b.voteCount - a.voteCount
-    });
-    return sortedIdeas;
-  }
+  const ideasToDisplay = useMemo(() => getSortedIdeas(
+    filterIdeasBySearchBar(ideas ?? [], search)
+  ), [search, ideas])
 
   return (
     <>
@@ -51,10 +65,12 @@ const Home: NextPage = () => {
           categoryType={categoryType}
         />
 
+        <SearchBar setSearch={setSearch} search={search} />
+
         {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
 
         <section className="my-4 grid gap-4 grid-cols-4">
-          {getSortedIdeas().map((idea, index) => (
+          {ideasToDisplay.map((idea, index) => (
             <IdeaCard
               key={index}
               idea={idea}
