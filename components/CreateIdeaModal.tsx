@@ -2,7 +2,11 @@ import { Modal } from "antd"
 import NewIdeaForm from "./NewIdeaForm"
 
 export const CreateIdeaModal = (
-  { showModal, setShowModal, onIdeaCreated }:
+  {
+    showModal,
+    setShowModal,
+    onIdeaCreated
+  }:
     {
       showModal: boolean,
       setShowModal: (isDisplayed: boolean) => void,

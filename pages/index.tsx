@@ -8,54 +8,63 @@ import IdeaCard from "../components/IdeaCard";
 import CategoryTabs from "../components/CategoryTabs";
 import { Category } from "../data/ideaCategory";
 import { CreateIdeaModal } from "../components/CreateIdeaModal";
+import { useQuery } from "@tanstack/react-query";
 
 const Home: NextPage = () => {
-  const [categoryType, setCategoryType] = useState<string>(Category.SHORTS);
-  const [likes, setLikes] = useState<Like[]>([]);
-  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [categoryType, setCategoryType] = useState<Category>(Category.SHORTS);
   const [showModal, setShowModal] = useState(false);
 
-  // TODO: refactor more maybe
-  useEffect(() => {
-    getLikes().then(setLikes);
-    getIdeas(categoryType).then(setIdeas);
-  }, [categoryType])
+  const { data: likes, refetch: refetchLikes } =
+    useQuery<Like[]>(['likes'], getLikes)
 
-  const handleHeartClicked = (ideaId: string) => {
-    getLikes().then(setLikes);
-    getIdeas(categoryType).then(setIdeas);
+  const { data: ideas, refetch: refetchIdeas } =
+    useQuery<Idea[]>([categoryType], () => getIdeas(categoryType))
+
+  const handleHeartClicked = () => {
+    refetchLikes();
+    refetchIdeas();
   }
 
   const handleIdeaCreated = () => {
-    getIdeas(categoryType).then(setIdeas);
+    refetchIdeas();
+  }
+
+  const getSortedIdeas = () => {
+    if (!ideas) return [];
+    const sortedIdeas = [...ideas]
+    sortedIdeas.sort((a, b) => {
+      return b.voteCount - a.voteCount
+    });
+    return sortedIdeas;
   }
 
   return (
     <>
       <Header onNewIdeaClicked={() => setShowModal(true)} />
-      <CategoryTabs
-        setCategoryType={(category) => setCategoryType(category)}
-        categoryType={categoryType}
-      />
-      <section className="mt-4">
-        <div className="content">
-          <h3 className="font-semibold text-4xl">Awesome Ideas 🤩🥳</h3>
 
-          {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
+      <section className="mt-4 container mx-auto">
 
-          <section className="my-4 grid gap-4 grid-cols-4">
-            {ideas?.map((idea, index) => (
-              <IdeaCard
-                key={index}
-                idea={idea}
-                onHeartClicked={handleHeartClicked}
-                isLiked={(ideaId: string) =>
-                  !!likes.find(like => like.ideaId === ideaId)
-                }
-              />
-            ))}
-          </section>
-        </div>
+        <h3 className="font-semibold text-4xl">🤩 YouTube Video Ideas 🥳</h3>
+
+        <CategoryTabs
+          setCategoryType={(category: Category) => setCategoryType(category)}
+          categoryType={categoryType}
+        />
+
+        {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
+
+        <section className="my-4 grid gap-4 grid-cols-4">
+          {getSortedIdeas().map((idea, index) => (
+            <IdeaCard
+              key={index}
+              idea={idea}
+              onHeartClicked={handleHeartClicked}
+              isLiked={(ideaId: string) =>
+                likes ? !!likes.find(like => like.ideaId === ideaId) : false
+              }
+            />
+          ))}
+        </section>
       </section>
       <CreateIdeaModal
         onIdeaCreated={handleIdeaCreated}

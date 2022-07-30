@@ -7,8 +7,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.content {
-  max-width: 1240px;
-  margin: auto;
-}

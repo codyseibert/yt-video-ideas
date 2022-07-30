@@ -1,11 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useSession, signIn } from "next-auth/react";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { HeartIcon as VotedHeart } from "@heroicons/react/solid";
 import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
-import logo from "../assets/logo.jpeg";
-import axios from "axios";
-import { HeartSpinner } from "react-spinners-kit";
 import { Idea } from "@prisma/client";
 import { heartIdea } from "../api/heartIdea";
 
@@ -18,31 +15,14 @@ const IdeaCard = ({
   isLiked: (ideaId: string) => boolean
   onHeartClicked: (ideaId: string) => void
 }) => {
-  const [loading, setLoading] = useState(false);
-  const { data: session, status } = useSession();
-  // const { isLiked, fetchLikes } = useContext(LikesContext)!;
+  const { status } = useSession();
 
   const toggleHeart = async () => {
     if (status === "unauthenticated") {
       return signIn();
     }
-
-    setLoading(true);
     await heartIdea(idea.id);
-    setLoading(false);
-    // optimistic client-side updating
-    // setIdeas((prevIdeas: any[]) =>
-    //   [
-    //     ...prevIdeas.filter((prevIdea: any) => prevIdea.id !== idea?.id),
-    //     {
-    //       ...idea,
-    //       voteCount: idea.voteCount + (isLiked(idea.id) ? -1 : 1),
-    //     }
-    //   ],
-    // )
-    // await fetchLikes();
     onHeartClicked(idea.id);
-
   };
 
   return (
@@ -57,7 +37,7 @@ const IdeaCard = ({
 
         <section className="mt-2 flex items-center justify-between">
           <img
-            src={idea.authorImage}
+            src={idea.authorImage ?? '/logo.jpeg'}
             alt=""
             referrerPolicy="no-referrer"
             className="rounded-full"
@@ -71,11 +51,11 @@ const IdeaCard = ({
             {isLiked(idea.id) ?
               <VotedHeart
                 onClick={() => toggleHeart()}
-                className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
+                className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
               />
               : <NotVotedHeart
                 onClick={() => toggleHeart()}
-                className="w-8 h-6 text-red-500 cursor-pointer hover:h-10 hover:w-10 hover:text-red-800"
+                className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
               />
             }
             <small className="text-black dark:text-white">

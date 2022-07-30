@@ -11,8 +11,8 @@ const Header = (
   const { data: session, status } = useSession();
 
   return (
-    <header className="bg-gray-100">
-      <div className="content">
+    <header className="bg-gray-100 pt-1">
+      <div className="container mx-auto">
         <div className="flex justify-between items-center">
           <Link href="https://www.youtube.com/c/WebDevJunkie">
             <a target="_blank" rel="noopener noreferrer">

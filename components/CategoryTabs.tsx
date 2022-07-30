@@ -1,12 +1,13 @@
 import React from "react";
-import { categories } from "../data/ideaCategory";
+import { categories, Category } from "../data/ideaCategory";
 
-type Props = {
-  setCategoryType: (category: string) => void;
-  categoryType: string;
-};
-
-const CategoryTabs = ({ setCategoryType, categoryType }: Props) => {
+const CategoryTabs = ({
+  setCategoryType,
+  categoryType
+}: {
+  setCategoryType: (category: Category) => void;
+  categoryType: Category;
+}) => {
   return (
     <div className="bg-white shadow-sm py-2 my-2">
       <div className="content">
@@ -19,7 +20,6 @@ const CategoryTabs = ({ setCategoryType, categoryType }: Props) => {
               <li
                 onClick={() => setCategoryType(category.value)}
                 key={index}
-                // className="bg-blue-300 text-white py-2 px-4 rounded-md cursor-pointer"
                 className={
                   categoryType === category?.value
                     ? `bg-blue-300 text-white py-2 px-4 rounded-md cursor-pointer`
