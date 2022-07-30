@@ -1,12 +1,12 @@
 import React from "react";
-import { ideaCategories } from "../data/ideaCategory";
+import { categories } from "../data/ideaCategory";
 
 type Props = {
-  setCategoryType: (value: string) => void;
+  setCategoryType: (category: string) => void;
   categoryType: string;
 };
 
-const NavBar = ({ setCategoryType, categoryType }: Props) => {
+const CategoryTabs = ({ setCategoryType, categoryType }: Props) => {
   return (
     <div className="bg-white shadow-sm py-2 my-2">
       <div className="content">
@@ -15,7 +15,7 @@ const NavBar = ({ setCategoryType, categoryType }: Props) => {
             <li className="bg-blue-300 text-white py-2 px-4 rounded-md">
               Filter By:
             </li>
-            {ideaCategories?.map((category, index) => (
+            {categories?.map((category, index) => (
               <li
                 onClick={() => setCategoryType(category.value)}
                 key={index}
@@ -36,4 +36,4 @@ const NavBar = ({ setCategoryType, categoryType }: Props) => {
   );
 };
 
-export default NavBar;
+export default CategoryTabs;

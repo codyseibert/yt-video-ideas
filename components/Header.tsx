@@ -2,12 +2,12 @@ import React from "react";
 import { useSession, signOut, signIn } from "next-auth/react";
 import Image from "next/image";
 import logo from "../assets/logo.jpeg";
-import NewIdeaBtn from "./NewIdeaBtn";
 import Link from "next/link";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = (
+  { onNewIdeaClicked }:
+    { onNewIdeaClicked: () => void }
+) => {
   const { data: session, status } = useSession();
 
   return (
@@ -26,7 +26,12 @@ const Header = (props: Props) => {
                 <button className="font-semibold text-xl p-2">
                   {session?.user?.name}
                 </button>
-                <NewIdeaBtn />
+                <button
+                  onClick={onNewIdeaClicked}
+                  className="text-blue-500 border border-blue-300 hover:bg-blue-300 hover:text-white p-2 rounded-md"
+                >
+                  New Idea
+                </button>
                 <button
                   onClick={() => signOut()}
                   className="bg-blue-300 text-white p-2 rounded-md"

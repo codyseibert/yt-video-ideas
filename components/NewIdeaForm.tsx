@@ -3,19 +3,19 @@ import { useSession } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { RotateSpinner } from "react-spinners-kit";
-import { ideaCategories } from "../data/ideaCategory";
-
-type Props = {
-  setShowModal: (args: boolean) => void;
-};
+import { categories, Category } from "../data/ideaCategory";
+import { createIdea } from "../api/createIdea";
 
 type Inputs = {
   title: string;
   description: string;
-  category: "youtube_shorts" | "opinions_on" | "project_idea" | "tutorial";
+  category: Category
 };
 
-const NewIdeaForm = ({ setShowModal }: Props) => {
+const NewIdeaForm = ({ onIdeaCreated, setShowModal }: {
+  setShowModal: (args: boolean) => void;
+  onIdeaCreated: () => void
+}) => {
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
   const { data: session } = useSession();
 
@@ -28,16 +28,18 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoadingStatus(true);
-    const response = await axios.post("/api/ideas/create-idea", {
+    await createIdea({
       title: data?.title,
       description: data?.description,
-      authorImage: session?.user?.image,
-      authorName: session?.user?.name,
       category: data?.category,
-    });
+    }, {
+      image: session?.user?.image,
+      name: session?.user?.name,
+    })
     reset();
     setLoadingStatus(false);
     setShowModal(false);
+    onIdeaCreated();
   };
 
   return (
@@ -74,7 +76,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
             className=" border border-gray-300 p-2 w-full rounded-md"
           >
             <option value="">Select Category</option>
-            {ideaCategories.map((option, index) => (
+            {categories.map((option, index) => (
               <option value={option?.value} key={index}>
                 {option?.label}
               </option>
@@ -85,7 +87,7 @@ const NewIdeaForm = ({ setShowModal }: Props) => {
           )}
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex justify-end gap-4">
           <button
             disabled={loadingStatus}
             onClick={() => setShowModal(false)}

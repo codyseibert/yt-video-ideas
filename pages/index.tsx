@@ -1,62 +1,67 @@
-import axios from "axios";
+import { Idea, Like } from "@prisma/client";
 import type { NextPage } from "next";
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState } from "react";
+import { getIdeas } from "../api/getIdeas";
+import { getLikes } from "../api/getLikes";
 import Header from "../components/Header";
-import NavBar from "../components/NavBar";
-import Opinions from "../components/NavBarPages/Opinions";
-import ProjectIdeas from "../components/NavBarPages/ProjectIdeas";
-import Tutorials from "../components/NavBarPages/Tutorials";
-import YoutubeShorts from "../components/NavBarPages/YoutubeShorts";
-
-type ICategory = string;
-
-interface LikesContextInterface {
-  // likes: any[],
-  isLiked: (ideaId: string) => boolean;
-  fetchLikes: () => void;
-}
-
-export const LikesContext = createContext<LikesContextInterface | null>(null)
+import IdeaCard from "../components/IdeaCard";
+import CategoryTabs from "../components/CategoryTabs";
+import { Category } from "../data/ideaCategory";
+import { CreateIdeaModal } from "../components/CreateIdeaModal";
 
 const Home: NextPage = () => {
-  const [categoryType, setCategoryType] = useState<ICategory>("youtube_shorts");
-  const [likes, setLikes] = useState<any[]>([]);
+  const [categoryType, setCategoryType] = useState<string>(Category.SHORTS);
+  const [likes, setLikes] = useState<Like[]>([]);
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
-  const fetchLikes = async () => {
-    const { data: likesFromApi } = await axios.get("/api/likes");
-    setLikes(likesFromApi);
-  }
-
-  const contextValue: LikesContextInterface = {
-    fetchLikes,
-    isLiked: (ideaId) => likes.some(like => like.ideaId === ideaId)
-  }
-
+  // TODO: refactor more maybe
   useEffect(() => {
-    fetchLikes();
-  }, [])
+    getLikes().then(setLikes);
+    getIdeas(categoryType).then(setIdeas);
+  }, [categoryType])
+
+  const handleHeartClicked = (ideaId: string) => {
+    getLikes().then(setLikes);
+    getIdeas(categoryType).then(setIdeas);
+  }
+
+  const handleIdeaCreated = () => {
+    getIdeas(categoryType).then(setIdeas);
+  }
 
   return (
-    <div>
-      <div>
-        <Header />
-        <NavBar setCategoryType={setCategoryType} categoryType={categoryType} />
-        <LikesContext.Provider value={contextValue} >
-          <section className="mt-4">
-            <div className="content">
-              <h3 className="font-semibold text-4xl">Awesome Ideas 🤩🥳</h3>
+    <>
+      <Header onNewIdeaClicked={() => setShowModal(true)} />
+      <CategoryTabs
+        setCategoryType={(category) => setCategoryType(category)}
+        categoryType={categoryType}
+      />
+      <section className="mt-4">
+        <div className="content">
+          <h3 className="font-semibold text-4xl">Awesome Ideas 🤩🥳</h3>
 
-              <section className="my-4 grid gap-4 grid-cols-4">
-                {categoryType === "youtube_shorts" && <YoutubeShorts />}
-                {categoryType === "opinions_on" && <Opinions />}
-                {categoryType === "project_idea" && <ProjectIdeas />}
-                {categoryType === "tutorial" && <Tutorials />}
-              </section>
-            </div>
+          {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
+
+          <section className="my-4 grid gap-4 grid-cols-4">
+            {ideas?.map((idea, index) => (
+              <IdeaCard
+                key={index}
+                idea={idea}
+                onHeartClicked={handleHeartClicked}
+                isLiked={(ideaId: string) =>
+                  !!likes.find(like => like.ideaId === ideaId)
+                }
+              />
+            ))}
           </section>
-        </LikesContext.Provider>
-      </div>
-    </div>
+        </div>
+      </section>
+      <CreateIdeaModal
+        onIdeaCreated={handleIdeaCreated}
+        setShowModal={setShowModal}
+        showModal={showModal} />
+    </>
   );
 };
 

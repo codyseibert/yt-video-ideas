@@ -6,25 +6,21 @@ import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import logo from "../assets/logo.jpeg";
 import axios from "axios";
 import { HeartSpinner } from "react-spinners-kit";
-import { LikesContext } from "../pages";
 import { Idea } from "@prisma/client";
+import { heartIdea } from "../api/heartIdea";
 
-type Props = {
-  idea: {
-    title: string;
-    description: string;
-    authorImage: string;
-    authorName: string;
-    voteCount: number;
-    id: string;
-  };
-  setIdeas: React.Dispatch<React.SetStateAction<any[]>>
-};
-
-const IdeaCard = ({ idea, setIdeas }: Props) => {
+const IdeaCard = ({
+  idea,
+  isLiked,
+  onHeartClicked,
+}: {
+  idea: Idea,
+  isLiked: (ideaId: string) => boolean
+  onHeartClicked: (ideaId: string) => void
+}) => {
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
-  const { isLiked, fetchLikes } = useContext(LikesContext)!;
+  // const { isLiked, fetchLikes } = useContext(LikesContext)!;
 
   const toggleHeart = async () => {
     if (status === "unauthenticated") {
@@ -32,21 +28,20 @@ const IdeaCard = ({ idea, setIdeas }: Props) => {
     }
 
     setLoading(true);
-    const { data: like } = await axios.post("/api/ideas/heart-idea", {
-      ideaId: idea?.id,
-    });
+    await heartIdea(idea.id);
     setLoading(false);
     // optimistic client-side updating
-    setIdeas((prevIdeas: any[]) =>
-      [
-        ...prevIdeas.filter((prevIdea: any) => prevIdea.id !== idea?.id),
-        {
-          ...idea,
-          voteCount: idea.voteCount + (isLiked(idea.id) ? -1 : 1),
-        }
-      ],
-    )
-    await fetchLikes();
+    // setIdeas((prevIdeas: any[]) =>
+    //   [
+    //     ...prevIdeas.filter((prevIdea: any) => prevIdea.id !== idea?.id),
+    //     {
+    //       ...idea,
+    //       voteCount: idea.voteCount + (isLiked(idea.id) ? -1 : 1),
+    //     }
+    //   ],
+    // )
+    // await fetchLikes();
+    onHeartClicked(idea.id);
 
   };
 
@@ -64,6 +59,7 @@ const IdeaCard = ({ idea, setIdeas }: Props) => {
           <img
             src={idea.authorImage}
             alt=""
+            referrerPolicy="no-referrer"
             className="rounded-full"
             width={30}
             height={30}
