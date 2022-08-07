@@ -17,6 +17,7 @@ model Idea {
   description String
   category    String   @default("")
   likes       Like[]
+  videoLink   String?
 }
 
 model Like {

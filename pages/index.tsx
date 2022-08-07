@@ -13,51 +13,56 @@ import SearchBar from "../components/SearchBar";
 
 const filterIdeasBySearchBar = (ideasToFilter: Idea[], search: string) => {
   if (!search) return ideasToFilter;
-  return ideasToFilter.filter(idea =>
-    idea.title.toLowerCase().includes(search.toLowerCase()) ||
-    idea.description.toLowerCase().includes(search.toLowerCase())
-  )
-}
+  return ideasToFilter.filter(
+    (idea) =>
+      idea.title.toLowerCase().includes(search.toLowerCase()) ||
+      idea.description.toLowerCase().includes(search.toLowerCase())
+  );
+};
 
 const getSortedIdeas = (ideasToSort: Idea[]) => {
   if (!ideasToSort) return [];
-  const sortedIdeas = [...ideasToSort]
+  const sortedIdeas = [...ideasToSort];
   sortedIdeas.sort((a, b) => {
-    return b.voteCount - a.voteCount
+    return b.voteCount - a.voteCount;
   });
   return sortedIdeas;
-}
+};
 
 const Home: NextPage = () => {
   const [categoryType, setCategoryType] = useState<Category>(Category.SHORTS);
   const [showModal, setShowModal] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
-  const { data: likes, refetch: refetchLikes } =
-    useQuery<Like[]>(['likes'], getLikes)
+  const { data: likes, refetch: refetchLikes } = useQuery<Like[]>(
+    ["likes"],
+    getLikes
+  );
 
-  const { data: ideas, refetch: refetchIdeas } =
-    useQuery<Idea[]>([categoryType], () => getIdeas(categoryType))
+  const { data: ideas, refetch: refetchIdeas } = useQuery<Idea[]>(
+    [categoryType],
+    () => getIdeas(categoryType)
+  );
 
   const handleHeartClicked = () => {
     refetchLikes();
     refetchIdeas();
-  }
+  };
 
   const handleIdeaCreated = () => {
     refetchIdeas();
-  }
+  };
 
-  const ideasToDisplay = useMemo(() => getSortedIdeas(
-    filterIdeasBySearchBar(ideas ?? [], search)
-  ), [search, ideas])
+  const ideasToDisplay = useMemo(
+    () => getSortedIdeas(filterIdeasBySearchBar(ideas ?? [], search)),
+    [search, ideas]
+  );
 
   return (
     <>
       <Header onNewIdeaClicked={() => setShowModal(true)} />
 
       <section className="mt-4 container mx-auto">
-
         <h3 className="font-semibold text-4xl">🤩 YouTube Video Ideas 🥳</h3>
 
         <CategoryTabs
@@ -70,13 +75,13 @@ const Home: NextPage = () => {
         {ideas?.length === 0 && <h1>No Ideas Found Yet</h1>}
 
         <section className="my-4 grid gap-4 grid-cols-4">
-          {ideasToDisplay.map((idea, index) => (
+          {ideasToDisplay?.map((idea, index) => (
             <IdeaCard
               key={index}
               idea={idea}
               onHeartClicked={handleHeartClicked}
               isLiked={(ideaId: string) =>
-                likes ? !!likes.find(like => like.ideaId === ideaId) : false
+                likes ? !!likes.find((like) => like.ideaId === ideaId) : false
               }
             />
           ))}
@@ -85,7 +90,8 @@ const Home: NextPage = () => {
       <CreateIdeaModal
         onIdeaCreated={handleIdeaCreated}
         setShowModal={setShowModal}
-        showModal={showModal} />
+        showModal={showModal}
+      />
     </>
   );
 };

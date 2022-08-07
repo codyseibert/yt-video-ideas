@@ -1,9 +1,8 @@
-
 export enum Category {
   SHORTS = "shorts",
   OPINIONS = "opinions",
   PROJECTS = "projects",
-  TUTORIALS = "tutorials"
+  TUTORIALS = "tutorials",
 }
 
 export const categories = [

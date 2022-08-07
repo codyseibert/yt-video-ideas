@@ -5,17 +5,23 @@ import { HeartIcon as VotedHeart } from "@heroicons/react/solid";
 import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import { Idea } from "@prisma/client";
 import { heartIdea } from "../api/heartIdea";
+import { Modal } from "antd";
+import { AddLinkToIdea } from "../api/addLink";
 
-const IdeaCard = ({
-  idea,
-  isLiked,
-  onHeartClicked,
-}: {
-  idea: Idea,
-  isLiked: (ideaId: string) => boolean
-  onHeartClicked: (ideaId: string) => void
-}) => {
-  const { status } = useSession();
+enum User {
+  email = "ybenson96@gmail.com",
+}
+
+type IProps = {
+  idea: Idea;
+  isLiked: (ideaId: string) => boolean;
+  onHeartClicked: (ideaId: string) => void;
+};
+
+const IdeaCard = ({ idea, isLiked, onHeartClicked }: IProps) => {
+  const { status, data: session } = useSession();
+  const [videoLink, setVideoLink] = useState<string>("");
+  const [openUploadLinkModal, setOpenUploadLinkModal] = useState(false);
 
   const toggleHeart = async () => {
     if (status === "unauthenticated") {
@@ -25,46 +31,99 @@ const IdeaCard = ({
     onHeartClicked(idea.id);
   };
 
+  const handleAddLink = async () => {
+    await AddLinkToIdea(idea.id, videoLink);
+  };
+
   return (
-    <div>
-      <div className="block p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {idea?.title}
-        </h5>
-        <p className="font-normal text-gray-700 dark:text-gray-400">
-          {idea?.description}
-        </p>
-
-        <section className="mt-2 flex items-center justify-between">
-          <img
-            src={idea.authorImage ?? '/logo.jpeg'}
-            alt=""
-            referrerPolicy="no-referrer"
-            className="rounded-full"
-            width={30}
-            height={30}
-          />
-
-          <div className="flex items-center text-white">
-            <small className="text-black dark:text-white">Benson Yeboah </small>
-
-            {isLiked(idea.id) ?
-              <VotedHeart
-                onClick={() => toggleHeart()}
-                className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
-              />
-              : <NotVotedHeart
-                onClick={() => toggleHeart()}
-                className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
-              />
-            }
-            <small className="text-black dark:text-white">
-              {idea?.voteCount}
-            </small>
+    <>
+      <div>
+        <div className="block p-4  bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+          <div>
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white text-justify">
+              {idea?.title}
+            </h5>
           </div>
-        </section>
+          <p className="font-normal text-gray-700 dark:text-gray-400 text-justify">
+            {idea?.description}
+          </p>
+
+          <section className="mt-2 flex items-center justify-between">
+            <img
+              src={idea.authorImage ?? "/logo.jpeg"}
+              alt=""
+              referrerPolicy="no-referrer"
+              className="rounded-full"
+              width={30}
+              height={30}
+            />
+
+            <div className="flex items-center text-white">
+              {session?.user?.email === User.email && (
+                <button
+                  onClick={() => setOpenUploadLinkModal(true)}
+                  className="bg-blue-400 text-white py-2 px-4 rounded-md mr-2"
+                >
+                  Add Link
+                </button>
+              )}
+
+              {session?.user?.email !== User.email && (
+                <a
+                  href={
+                    idea.videoLink ?? "https://www.youtube.com/c/WebDevJunkie"
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-blue-400 text-white py-2 px-4 rounded-md mr-2 flex items-center justify-between"
+                >
+                  <span>Watch Video </span>
+                </a>
+              )}
+
+              {session?.user?.email !== User.email && (
+                <>
+                  {isLiked(idea.id) ? (
+                    <VotedHeart
+                      onClick={() => toggleHeart()}
+                      className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
+                    />
+                  ) : (
+                    <NotVotedHeart
+                      onClick={() => toggleHeart()}
+                      className="w-8 h-6 text-red-500 cursor-pointer hover:text-red-800"
+                    />
+                  )}
+                </>
+              )}
+
+              <small className="text-black dark:text-white">
+                {idea?.voteCount}
+              </small>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
+
+      <Modal
+        title={<h1>Add A Youtube Link</h1>}
+        centered
+        visible={openUploadLinkModal}
+        onCancel={() => setOpenUploadLinkModal(false)}
+        okText="submit"
+        onOk={() => handleAddLink()}
+      >
+        <form>
+          <input
+            type="url"
+            required
+            onChange={(e) => setVideoLink(e.target.value)}
+            placeholder="Please Enter Url"
+            className="py-3 px-4 rounded-md border border-gray-300 w-full"
+          />
+        </form>
+      </Modal>
+    </>
   );
 };
 
