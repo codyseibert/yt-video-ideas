@@ -13,7 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  console.log(updateUserIdea);
+  res.send(updateUserIdea);
 };
 
 export default handler;
