@@ -5,8 +5,8 @@ import { HeartIcon as VotedHeart } from "@heroicons/react/solid";
 import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import { Idea } from "@prisma/client";
 import { heartIdea } from "../api/heartIdea";
-import { Modal } from "antd";
 import { addLinkToIdea } from "../api/addLink";
+import { Modal } from "antd";
 
 enum User {
   email = "cseibert113@gmail.com",
@@ -20,7 +20,8 @@ type IProps = {
 
 const IdeaCard = ({ idea, isLiked, onHeartClicked }: IProps) => {
   const { status, data: session } = useSession();
-  const [videoLink, setVideoLink] = useState<string>("");
+  const [updateLinkLoading, setUpdateLinkLoading] = useState(false);
+  const [videoLink, setVideoLink] = useState<string>(idea?.videoLink ?? "");
   const [openUploadLinkModal, setOpenUploadLinkModal] = useState(false);
 
   const toggleHeart = async () => {
@@ -67,21 +68,26 @@ const IdeaCard = ({ idea, isLiked, onHeartClicked }: IProps) => {
                   onClick={() => setOpenUploadLinkModal(true)}
                   className="bg-blue-400 text-white py-2 px-4 rounded-md mr-2"
                 >
-                  Add Link
+                  Edit Link
                 </button>
               )}
 
               {session?.user?.email !== User.email && (
-                <a
-                  href={
-                    idea.videoLink ?? "https://www.youtube.com/c/WebDevJunkie"
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-blue-400 text-white py-2 px-4 rounded-md mr-2 flex items-center justify-between"
-                >
-                  <span>Watch Video </span>
-                </a>
+                <>
+                  {idea.videoLink && (
+                    <a
+                      href={
+                        idea.videoLink ??
+                        "https://www.youtube.com/c/WebDevJunkie"
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-blue-400 text-white py-2 px-4 rounded-md mr-2 flex items-center justify-between"
+                    >
+                      <span>Watch Video </span>
+                    </a>
+                  )}
+                </>
               )}
 
               {session?.user?.email !== User.email && (
@@ -112,18 +118,36 @@ const IdeaCard = ({ idea, isLiked, onHeartClicked }: IProps) => {
         title={<h1>Add A Youtube Link</h1>}
         centered
         visible={openUploadLinkModal}
-        onCancel={() => setOpenUploadLinkModal(false)}
         okText="submit"
-        onOk={() => handleAddLink()}
+        onCancel={() => setOpenUploadLinkModal(false)}
+        footer={false}
       >
-        <form>
+        <form onSubmit={handleAddLink}>
           <input
             type="url"
             required
+            defaultValue={idea.videoLink ?? ""}
             onChange={(e) => setVideoLink(e.target.value)}
             placeholder="Please Enter Url"
             className="py-3 px-4 rounded-md border border-gray-300 w-full"
           />
+          <div className="my-2 flex gap-x-4 justify-end">
+            <button
+              type="button"
+              onClick={() => setOpenUploadLinkModal(false)}
+              className="bg-red-400 text-white py-2 px-4 rounded-md"
+            >
+              cancel
+            </button>
+            <button
+              type="submit"
+              onClick={(e) => handleAddLink(e)}
+              disabled={updateLinkLoading}
+              className="bg-blue-400 disabled:bg-gray-100 disabled:cursor-wait text-white py-2 px-4 rounded-md"
+            >
+              Update
+            </button>
+          </div>
         </form>
       </Modal>
     </>
