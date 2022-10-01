@@ -1,6 +1,6 @@
 import { Idea, Like } from "@prisma/client";
 import type { NextPage } from "next";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { getIdeas } from "../api/getIdeas";
 import { getLikes } from "../api/getLikes";
 import Header from "../components/Header";

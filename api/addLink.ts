@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const AddLinkToIdea = async (
+export const addLinkToIdea = async (
   ideaId: string,
   videoLink: string
 ): Promise<void> => {

@@ -6,10 +6,10 @@ import { HeartIcon as NotVotedHeart } from "@heroicons/react/outline";
 import { Idea } from "@prisma/client";
 import { heartIdea } from "../api/heartIdea";
 import { Modal } from "antd";
-import { AddLinkToIdea } from "../api/addLink";
+import { addLinkToIdea } from "../api/addLink";
 
 enum User {
-  email = "ybenson96@gmail.com",
+  email = "cseibert113@gmail.com",
 }
 
 type IProps = {
@@ -32,13 +32,16 @@ const IdeaCard = ({ idea, isLiked, onHeartClicked }: IProps) => {
   };
 
   const handleAddLink = async () => {
-    await AddLinkToIdea(idea.id, videoLink);
+    console.log('a');
+    await addLinkToIdea(idea.id, videoLink);
+    console.log('we are here');
+    setOpenUploadLinkModal(false);
   };
 
   return (
     <>
       <div>
-        <div className="block p-4  bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <div className="block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div>
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white text-justify">
               {idea?.title}
